@@ -20,7 +20,6 @@ import { CoreOutput } from '../common/dtos/core-output.dto'
 import { Navigation } from '../navigation/entities/navigation.entity'
 import { GrantAccessInput } from './dtos/grant-access.dto'
 import { Access } from '../access/entities/access.entity'
-import { log } from 'util'
 
 @Injectable()
 export class UserService {
@@ -80,8 +79,6 @@ export class UserService {
   }
 
   async editProfile(u: User, d: EditUserInput): Promise<EditUserOutput> {
-    console.log(u.baseRole.includes('Admin'))
-    console.log(d.baseRole)
     if (!u.baseRole.includes('Admin')) {
       return { ok: false, error: 'You have no right to do this' }
     }

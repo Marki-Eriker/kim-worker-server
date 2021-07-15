@@ -13,6 +13,14 @@ import { NavigationModule } from './navigation/navigation.module'
 import { Navigation } from './navigation/entities/navigation.entity'
 import { AccessModule } from './access/access.module'
 import { Access } from './access/entities/access.entity'
+import { RequestModule } from './request/request.module'
+import { Request } from './request/entities/request.entity'
+import { ServiceType } from './request/entities/service-type.entity'
+import { Contractor } from './request/entities/contractor.entity'
+import { OrganizationContact } from './request/entities/organization-contact.entity'
+import { BankAccount } from './request/entities/bank-account.entity'
+import { Signatory } from './request/entities/signatory.entity'
+import { Ship } from './request/entities/ship.entity'
 
 @Module({
   imports: [
@@ -44,6 +52,29 @@ import { Access } from './access/entities/access.entity'
         logging: false,
       }),
     }),
+    TypeOrmModule.forRootAsync({
+      name: 'request',
+      useFactory: () => ({
+        type: 'postgres',
+        host: process.env.LK_DB_HOST,
+        port: +process.env.LK_DB_PORT,
+        username: process.env.LK_DB_USER,
+        password: process.env.LK_DB_PASSWORD,
+        database: process.env.LK_DB_NAME,
+        schema: process.env.LK_DB_SCHEMA,
+        entities: [
+          Request,
+          ServiceType,
+          Contractor,
+          OrganizationContact,
+          BankAccount,
+          Signatory,
+          Ship,
+        ],
+        synchronize: false,
+        logging: false,
+      }),
+    }),
     GraphQLModule.forRoot({
       playground: process.env.NODE_ENV !== 'prod',
       autoSchemaFile: true,
@@ -60,6 +91,7 @@ import { Access } from './access/entities/access.entity'
     AuthModule,
     NavigationModule,
     AccessModule,
+    RequestModule.forRoot({ fileLink: process.env.FILE_LINK }),
   ],
   controllers: [],
   providers: [],
