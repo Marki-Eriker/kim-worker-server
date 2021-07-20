@@ -17,6 +17,10 @@ import { DeleteUserInput, DeleteUserOutput } from './dtos/delete-user.dto'
 import { CoreOutput } from '../common/dtos/core-output.dto'
 import { GrantAccessInput, GrantAccessOutput } from './dtos/grant-access.dto'
 import { UserInfoInput, UserInfoOutput } from './dtos/user-info.dto'
+import {
+  GrantRequestAccessInput,
+  GrantRequestAccessOutput,
+} from './dtos/grant-request-access.dto'
 
 @Resolver(() => User)
 export class UserResolver {
@@ -98,5 +102,13 @@ export class UserResolver {
     @Args('input') data: GrantAccessInput,
   ): Promise<GrantAccessOutput> {
     return this.userService.grantAccess(data)
+  }
+
+  @Mutation(() => GrantAccessOutput)
+  @Role(['Admin'])
+  async grantRequestAccess(
+    @Args('input') data: GrantRequestAccessInput,
+  ): Promise<GrantRequestAccessOutput> {
+    return this.userService.grantRequestAccess(data)
   }
 }

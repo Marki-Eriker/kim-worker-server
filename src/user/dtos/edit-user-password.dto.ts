@@ -15,4 +15,7 @@ export class EditUserPasswordOutput extends CoreOutput {}
 export class EditUserPasswordInput extends PickType(User, ['password']) {
   @Field(() => Number)
   userId: number
+
+  @Field(() => Boolean, { defaultValue: false })
+  deleteCookie: boolean
 }

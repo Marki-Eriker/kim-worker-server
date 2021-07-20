@@ -11,6 +11,7 @@ import { CONFIG_OPTIONS } from '../common/common.constants'
 import { BankAccount } from './entities/bank-account.entity'
 import { Signatory } from './entities/signatory.entity'
 import { Ship } from './entities/ship.entity'
+import { FileStorageItem } from './entities/file-storage-item.entity'
 
 // @Module({
 //   imports: [
@@ -36,6 +37,7 @@ export class RequestModule {
             BankAccount,
             Signatory,
             Ship,
+            FileStorageItem,
           ],
           'request',
         ),

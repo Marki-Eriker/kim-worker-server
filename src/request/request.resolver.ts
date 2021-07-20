@@ -8,6 +8,8 @@ import {
   UpdateRequestStatusOutput,
 } from './dtos/update-status.dto'
 import { RequestInfoInput, RequestInfoOutput } from './dtos/request-info.dto'
+import { AuthUser } from '../auth/auth-user.decorator'
+import { User } from '../user/entities/user.entity'
 @Resolver(() => Request)
 export class RequestResolver {
   constructor(private readonly requestService: RequestService) {}
@@ -15,9 +17,10 @@ export class RequestResolver {
   @Query(() => RequestListOutput)
   @Role(['Any'])
   async getRequests(
+    @AuthUser() { serviceTypes }: User,
     @Args('input') data: RequestListInput,
   ): Promise<RequestListOutput> {
-    return this.requestService.list(data)
+    return this.requestService.list(data, serviceTypes)
   }
 
   @Query(() => RequestInfoOutput)

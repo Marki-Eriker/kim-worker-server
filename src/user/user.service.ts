@@ -18,8 +18,12 @@ import { MeOutput } from './dtos/me.dto'
 import { REFRESH_TOKEN } from '../common/common.constants'
 import { CoreOutput } from '../common/dtos/core-output.dto'
 import { Navigation } from '../navigation/entities/navigation.entity'
-import { GrantAccessInput } from './dtos/grant-access.dto'
+import { GrantAccessInput, GrantAccessOutput } from './dtos/grant-access.dto'
 import { Access } from '../access/entities/access.entity'
+import {
+  GrantRequestAccessInput,
+  GrantRequestAccessOutput,
+} from './dtos/grant-request-access.dto'
 
 @Injectable()
 export class UserService {
@@ -244,7 +248,10 @@ export class UserService {
     }
   }
 
-  async grantAccess({ accessId, userId }: GrantAccessInput) {
+  async grantAccess({
+    accessId,
+    userId,
+  }: GrantAccessInput): Promise<GrantAccessOutput> {
     try {
       const access = await this.accessRepository.findByIds(accessId)
       if (!access) {
@@ -258,6 +265,25 @@ export class UserService {
       user.access = access
       await this.userRepository.save(user)
 
+      return { ok: true }
+    } catch (error) {
+      return { ok: false, error }
+    }
+  }
+
+  async grantRequestAccess({
+    requestTypeId,
+    userId,
+  }: GrantRequestAccessInput): Promise<GrantRequestAccessOutput> {
+    try {
+      const user = await this.userRepository.findOne(userId)
+
+      if (!user) {
+        return { ok: false, error: 'User not found' }
+      }
+
+      user.serviceTypes = requestTypeId
+      await this.userRepository.save(user)
       return { ok: true }
     } catch (error) {
       return { ok: false, error }

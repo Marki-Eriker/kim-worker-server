@@ -14,6 +14,7 @@ import { InternalServerErrorException } from '@nestjs/common'
 import * as bcrypt from 'bcrypt'
 import { RefreshToken } from '../../token/entities/refresh-token.entity'
 import { Access } from '../../access/entities/access.entity'
+import { ServiceType } from '../../request/entities/service-type.entity'
 
 export enum UserBaseRole {
   Admin = 'Admin',
@@ -53,6 +54,10 @@ export class User extends CoreEntity {
   @JoinTable()
   @Field(() => [Access], { nullable: true })
   access?: Access[]
+
+  @Column('int', { array: true, nullable: true })
+  @Field(() => [Number], { nullable: true })
+  serviceTypes?: number[]
 
   @BeforeInsert()
   @BeforeUpdate()

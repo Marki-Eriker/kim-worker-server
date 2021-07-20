@@ -21,6 +21,8 @@ import { OrganizationContact } from './request/entities/organization-contact.ent
 import { BankAccount } from './request/entities/bank-account.entity'
 import { Signatory } from './request/entities/signatory.entity'
 import { Ship } from './request/entities/ship.entity'
+import { UploadModule } from './upload/upload.module'
+import { FileStorageItem } from './request/entities/file-storage-item.entity'
 
 @Module({
   imports: [
@@ -70,6 +72,7 @@ import { Ship } from './request/entities/ship.entity'
           BankAccount,
           Signatory,
           Ship,
+          FileStorageItem,
         ],
         synchronize: false,
         logging: false,
@@ -87,11 +90,12 @@ import { Ship } from './request/entities/ship.entity'
       refreshTokenTTL: process.env.REFRESH_TOKEN_TTL,
     }),
     JwtModule.forRoot({ privateKey: process.env.TOKEN_SECRET }),
+    RequestModule.forRoot({ fileLink: process.env.FILE_LINK }),
     UserModule,
     AuthModule,
     NavigationModule,
     AccessModule,
-    RequestModule.forRoot({ fileLink: process.env.FILE_LINK }),
+    UploadModule,
   ],
   controllers: [],
   providers: [],

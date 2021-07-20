@@ -6,7 +6,7 @@ import { Navigation } from '../../navigation/entities/navigation.entity'
 @ObjectType()
 class UserInfo extends PickType(
   User,
-  ['email', 'fullName', 'baseRole'],
+  ['id', 'email', 'fullName', 'baseRole', 'serviceTypes'],
   ObjectType,
 ) {}
 

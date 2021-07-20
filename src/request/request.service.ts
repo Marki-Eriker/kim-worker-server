@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Any, Raw, Repository } from 'typeorm'
+import { Any, Repository } from 'typeorm'
 import { Request } from './entities/request.entity'
 import { RequestListInput, RequestListOutput } from './dtos/request-list.dto'
 import {
@@ -18,17 +18,21 @@ export class RequestService {
     private readonly options: RequestModuleOptions,
     @InjectRepository(Request, 'request')
     private readonly requestRepository: Repository<Request>,
-  ) {
-    // this.testRequest()
-  }
+  ) {}
 
-  async list(d: RequestListInput): Promise<RequestListOutput> {
+  async list(
+    d: RequestListInput,
+    allowedTypes: number[],
+  ): Promise<RequestListOutput> {
+    if (!allowedTypes) {
+      return { ok: false, error: 'you do not have any allowed request types' }
+    }
     try {
       let where = {}
       where = d.status ? { status: d.status } : {}
       where = d.serviceId
         ? { service_type_id: d.serviceId, ...where }
-        : { service_type_id: Any([4, 6]), ...where }
+        : { service_type_id: Any(allowedTypes), ...where }
 
       const [requests, totalItems] = await this.requestRepository.findAndCount({
         skip: (d.page - 1) * d.pageSize,
@@ -94,16 +98,4 @@ export class RequestService {
       return { ok: false, error: 'fail to get request info' }
     }
   }
-
-  // async testRequest() {
-  //   try {
-  //     const requests = await this.requestRepository.findOne(588, {
-  //       relations: ['bank_account_id', 'signatory_id', 'ships'],
-  //     })
-  //
-  //     console.log(requests)
-  //   } catch (e) {
-  //     console.log(e)
-  //   }
-  // }
 }
