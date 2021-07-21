@@ -7,6 +7,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
@@ -16,6 +17,7 @@ import { OrganizationContact } from './organization-contact.entity'
 import { BankAccount } from './bank-account.entity'
 import { Signatory } from './signatory.entity'
 import { Ship } from './ship.entity'
+import { Contract } from '../../contract/entities/contract.entity'
 
 export enum RequestStatus {
   pending = 'pending',
@@ -103,4 +105,8 @@ export class Request {
   })
   @Field(() => [Ship])
   ships: Ship[]
+
+  @OneToMany(() => Contract, (c) => c.service_request_id, { eager: true })
+  @Field(() => [Contract], { nullable: true })
+  contracts?: Contract[]
 }

@@ -23,6 +23,10 @@ import { Signatory } from './request/entities/signatory.entity'
 import { Ship } from './request/entities/ship.entity'
 import { UploadModule } from './upload/upload.module'
 import { FileStorageItem } from './request/entities/file-storage-item.entity'
+import { ContractModule } from './contract/contract.module'
+import { Contract } from './contract/entities/contract.entity'
+import { ContractPaymentInvoice } from './contract/entities/contract-payment-invoice.entity'
+import { ContractPaymentInvoiceConfirmation } from './contract/entities/contract-payment-confirmation.entity'
 
 @Module({
   imports: [
@@ -73,6 +77,9 @@ import { FileStorageItem } from './request/entities/file-storage-item.entity'
           Signatory,
           Ship,
           FileStorageItem,
+          Contract,
+          ContractPaymentInvoice,
+          ContractPaymentInvoiceConfirmation,
         ],
         synchronize: false,
         logging: false,
@@ -96,6 +103,7 @@ import { FileStorageItem } from './request/entities/file-storage-item.entity'
     NavigationModule,
     AccessModule,
     UploadModule,
+    ContractModule,
   ],
   controllers: [],
   providers: [],

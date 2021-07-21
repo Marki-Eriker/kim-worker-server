@@ -18,10 +18,6 @@ export class UploadController {
     fs.writeFileSync(`${path}/${hash}.pdf`, file.buffer)
 
     return {
-      fileName: file.originalname,
-      extension: 'pdf',
-      mimetype: 'application/pdf',
-      size: file.size,
       checksum: hash,
     }
   }

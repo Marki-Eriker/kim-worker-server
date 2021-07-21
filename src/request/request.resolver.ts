@@ -10,6 +10,10 @@ import {
 import { RequestInfoInput, RequestInfoOutput } from './dtos/request-info.dto'
 import { AuthUser } from '../auth/auth-user.decorator'
 import { User } from '../user/entities/user.entity'
+import {
+  SaveStorageItemInput,
+  SaveStorageItemOutput,
+} from './dtos/save-storage-item.dto'
 @Resolver(() => Request)
 export class RequestResolver {
   constructor(private readonly requestService: RequestService) {}
@@ -37,5 +41,13 @@ export class RequestResolver {
     @Args('input') data: UpdateRequestStatusInput,
   ): Promise<UpdateRequestStatusOutput> {
     return this.requestService.updateStatus(data)
+  }
+
+  @Mutation(() => SaveStorageItemOutput)
+  @Role(['Any'])
+  async saveStorageItem(
+    @Args('input') data: SaveStorageItemInput,
+  ): Promise<SaveStorageItemOutput> {
+    return this.requestService.saveStorageItem(data)
   }
 }

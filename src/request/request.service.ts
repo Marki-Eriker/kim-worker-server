@@ -10,6 +10,11 @@ import {
 import { CONFIG_OPTIONS } from '../common/common.constants'
 import { RequestModuleOptions } from './request.interface'
 import { RequestInfoInput, RequestInfoOutput } from './dtos/request-info.dto'
+import {
+  SaveStorageItemInput,
+  SaveStorageItemOutput,
+} from './dtos/save-storage-item.dto'
+import { FileStorageItem } from './entities/file-storage-item.entity'
 
 @Injectable()
 export class RequestService {
@@ -18,6 +23,8 @@ export class RequestService {
     private readonly options: RequestModuleOptions,
     @InjectRepository(Request, 'request')
     private readonly requestRepository: Repository<Request>,
+    @InjectRepository(FileStorageItem, 'request')
+    private readonly fileStorageItemRepository: Repository<FileStorageItem>,
   ) {}
 
   async list(
@@ -96,6 +103,26 @@ export class RequestService {
     } catch (error) {
       console.log(error)
       return { ok: false, error: 'fail to get request info' }
+    }
+  }
+
+  async saveStorageItem(
+    data: SaveStorageItemInput,
+  ): Promise<SaveStorageItemOutput> {
+    try {
+      const storageItem = await this.fileStorageItemRepository.create({
+        original_filename: data.fileName,
+        extension: data.extension,
+        mime_type: data.mimetype,
+        size: data.size,
+        checksum: data.checksum,
+      })
+
+      await this.fileStorageItemRepository.save(storageItem)
+
+      return { ok: true, contractId: storageItem.id }
+    } catch (error) {
+      return { ok: false, error }
     }
   }
 }
