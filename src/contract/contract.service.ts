@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Contract } from './entities/contract.entity'
-import { ILike, Repository } from 'typeorm'
+import { getRepository, ILike, Repository } from 'typeorm'
 import {
   CreateContractInput,
   CreateContractOutput,
 } from './dtos/create-contract.dto'
-import { Request } from '../request/entities/request.entity'
+import { Request, RequestStatus } from '../request/entities/request.entity'
 import { FileStorageItem } from '../request/entities/file-storage-item.entity'
 import {
   CreatePaymentInvoiceInput,
@@ -22,10 +22,14 @@ import {
   ConfirmPaymentInput,
   ConfirmPaymentOutput,
 } from './dtos/confirm-payment.dto'
+import { ContractListInput, ContractListOutput } from './dtos/contract-list.dto'
+import { Contractor } from '../request/entities/contractor.entity'
 
 @Injectable()
 export class ContractService {
   constructor(
+    @InjectRepository(Contractor, 'request')
+    private readonly contractorRepository: Repository<Contractor>,
     @InjectRepository(Contract, 'request')
     private readonly contractRepository: Repository<Contract>,
     @InjectRepository(Request, 'request')
@@ -162,6 +166,65 @@ export class ContractService {
       return { ok: true }
     } catch (error) {
       return { ok: false, error: 'can not confirm payment' }
+    }
+  }
+
+  async list(
+    data: ContractListInput,
+    allowedTypes: number[],
+  ): Promise<ContractListOutput> {
+    if (!allowedTypes) {
+      return { ok: false, error: 'you do not have any allowed request types' }
+    }
+
+    if (data.serviceTypeId && !allowedTypes.includes(data.serviceTypeId)) {
+      return {
+        ok: false,
+        error: 'you do not have permissions for this request type',
+      }
+    }
+
+    try {
+      const serviceTypes = data.serviceTypeId
+        ? [data.serviceTypeId]
+        : allowedTypes
+
+      const order = data.orderBy === 'DESC' ? 'DESC' : 'ASC'
+
+      const [contracts, totalItems] = await getRepository(Contract, 'request')
+        .createQueryBuilder('contract')
+        .leftJoinAndSelect('contract.service_request_id', 'service_request')
+        .leftJoinAndSelect('contract.file_storage_item_id', 'file_storage_item')
+        .where('service_request.status = :status', {
+          status: RequestStatus.completed,
+        })
+        .andWhere('service_request.service_type_id IN (:...ids)', {
+          ids: serviceTypes,
+        })
+        .skip((data.page - 1) * data.pageSize)
+        .take(data.pageSize)
+        .orderBy(`contract.${data.orderField}`, order)
+        .getManyAndCount()
+
+      const totalPages = Math.ceil(totalItems / data.pageSize)
+
+      console.log(contracts)
+
+      return {
+        ok: true,
+        contracts,
+        paginationInfo: {
+          totalItems,
+          totalPages,
+          page: data.page,
+          itemsPerPage: data.pageSize,
+          hasNextPage: totalPages > data.page,
+          hasPreviousPage: data.page > 1,
+        },
+      }
+    } catch (error) {
+      console.log(error)
+      return { ok: false, error: 'fail to fetch contracts' }
     }
   }
 }

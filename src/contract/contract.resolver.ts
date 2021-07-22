@@ -1,4 +1,4 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, Resolver, Query } from '@nestjs/graphql'
 import { Contract } from './entities/contract.entity'
 import { ContractService } from './contract.service'
 import {
@@ -18,6 +18,9 @@ import {
   ConfirmPaymentInput,
   ConfirmPaymentOutput,
 } from './dtos/confirm-payment.dto'
+import { ContractListInput, ContractListOutput } from './dtos/contract-list.dto'
+import { AuthUser } from '../auth/auth-user.decorator'
+import { User } from '../user/entities/user.entity'
 
 @Resolver(() => Contract)
 export class ContractResolver {
@@ -53,5 +56,14 @@ export class ContractResolver {
     @Args('input') data: ConfirmPaymentInput,
   ): Promise<ConfirmPaymentOutput> {
     return this.contractService.confirmPayment(data)
+  }
+
+  @Query(() => ContractListOutput)
+  @Role(['Any'])
+  async getContracts(
+    @AuthUser() { serviceTypes }: User,
+    @Args('input') data: ContractListInput,
+  ): Promise<ContractListOutput> {
+    return this.contractService.list(data, serviceTypes)
   }
 }

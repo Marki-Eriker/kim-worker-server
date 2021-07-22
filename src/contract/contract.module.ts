@@ -7,6 +7,7 @@ import { FileStorageItem } from '../request/entities/file-storage-item.entity'
 import { Request } from '../request/entities/request.entity'
 import { ContractPaymentInvoice } from './entities/contract-payment-invoice.entity'
 import { ContractPaymentInvoiceConfirmation } from './entities/contract-payment-confirmation.entity'
+import { Contractor } from '../request/entities/contractor.entity'
 
 @Module({
   providers: [ContractService, ContractResolver],
@@ -18,6 +19,7 @@ import { ContractPaymentInvoiceConfirmation } from './entities/contract-payment-
         Request,
         ContractPaymentInvoice,
         ContractPaymentInvoiceConfirmation,
+        Contractor,
       ],
       'request',
     ),
