@@ -21,6 +21,7 @@ import {
 import { ContractListInput, ContractListOutput } from './dtos/contract-list.dto'
 import { AuthUser } from '../auth/auth-user.decorator'
 import { User } from '../user/entities/user.entity'
+import { ContractInfoInput, ContractInfoOutput } from './dtos/contract-info'
 
 @Resolver(() => Contract)
 export class ContractResolver {
@@ -65,5 +66,13 @@ export class ContractResolver {
     @Args('input') data: ContractListInput,
   ): Promise<ContractListOutput> {
     return this.contractService.list(data, serviceTypes)
+  }
+
+  @Query(() => ContractInfoOutput)
+  @Role(['Any'])
+  async getContractInfo(
+    @Args('input') data: ContractInfoInput,
+  ): Promise<ContractInfoOutput> {
+    return this.contractService.getInfo(data)
   }
 }

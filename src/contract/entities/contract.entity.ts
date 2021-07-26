@@ -11,6 +11,7 @@ import { Request } from '../../request/entities/request.entity'
 import { FileStorageItem } from '../../request/entities/file-storage-item.entity'
 import { ContractPaymentInvoice } from './contract-payment-invoice.entity'
 import { ContractPaymentInvoiceConfirmation } from './contract-payment-confirmation.entity'
+import { Contractor } from '../../request/entities/contractor.entity'
 
 @InputType('ContractInput', { isAbstract: true })
 @ObjectType()
@@ -33,10 +34,15 @@ export class Contract {
   @Field(() => Date)
   created_at: Date
 
-  @ManyToOne(() => FileStorageItem, (f) => f.contracts)
+  @ManyToOne(() => Contractor, (c) => c.contracts)
+  @JoinColumn({ name: 'contractor_id' })
+  @Field(() => Contractor)
+  contractor_id: Contractor
+
+  @ManyToOne(() => FileStorageItem, (f) => f.contracts, { eager: true })
   @JoinColumn({ name: 'file_storage_item_id' })
-  @Field(() => FileStorageItem)
-  file_storage_item_id: FileStorageItem
+  @Field(() => FileStorageItem, { nullable: true })
+  file_storage_item_id?: FileStorageItem
 
   @OneToMany(() => ContractPaymentInvoice, (cp) => cp.contract_id)
   @Field(() => [ContractPaymentInvoice], { nullable: true })

@@ -1,6 +1,7 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql'
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 import { Request } from './request.entity'
+import { Contract } from '../../contract/entities/contract.entity'
 
 @InputType('ContractorInputType', { isAbstract: true })
 @ObjectType()
@@ -21,4 +22,8 @@ export class Contractor {
   @OneToMany(() => Request, (req) => req.contractor_id)
   @Field(() => [Request])
   requests: Request[]
+
+  @OneToMany(() => Contract, (c) => c.contractor_id)
+  @Field(() => [Contract])
+  contracts: Contract[]
 }

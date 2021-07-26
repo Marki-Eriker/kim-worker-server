@@ -24,6 +24,7 @@ import {
 } from './dtos/confirm-payment.dto'
 import { ContractListInput, ContractListOutput } from './dtos/contract-list.dto'
 import { Contractor } from '../request/entities/contractor.entity'
+import { ContractInfoInput, ContractInfoOutput } from './dtos/contract-info'
 
 @Injectable()
 export class ContractService {
@@ -195,6 +196,7 @@ export class ContractService {
         .createQueryBuilder('contract')
         .leftJoinAndSelect('contract.service_request_id', 'service_request')
         .leftJoinAndSelect('contract.file_storage_item_id', 'file_storage_item')
+        .leftJoinAndSelect('contract.contractor_id', 'contractor')
         .where('service_request.status = :status', {
           status: RequestStatus.completed,
         })
@@ -207,8 +209,6 @@ export class ContractService {
         .getManyAndCount()
 
       const totalPages = Math.ceil(totalItems / data.pageSize)
-
-      console.log(contracts)
 
       return {
         ok: true,
@@ -225,6 +225,23 @@ export class ContractService {
     } catch (error) {
       console.log(error)
       return { ok: false, error: 'fail to fetch contracts' }
+    }
+  }
+
+  async getInfo({
+    contractId,
+  }: ContractInfoInput): Promise<ContractInfoOutput> {
+    try {
+      const contract = await this.contractRepository.findOne(contractId, {
+        relations: ['service_request_id', 'payment_invoice', 'invoice_confirm'],
+      })
+      if (!contract) {
+        return { ok: false, error: 'Contract not found' }
+      }
+
+      return { ok: true, contract }
+    } catch (error) {
+      return { ok: false, error: 'fail to fetch contract info' }
     }
   }
 }

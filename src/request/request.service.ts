@@ -92,7 +92,7 @@ export class RequestService {
   }: RequestInfoInput): Promise<RequestInfoOutput> {
     try {
       const request = await this.requestRepository.findOne(requestId, {
-        relations: ['bank_account_id', 'signatory_id', 'ships'],
+        relations: ['bank_account_id', 'signatory_id', 'ships', 'contracts'],
       })
 
       if (!request) {
@@ -120,7 +120,7 @@ export class RequestService {
 
       await this.fileStorageItemRepository.save(storageItem)
 
-      return { ok: true, contractId: storageItem.id }
+      return { ok: true, fileId: storageItem.id }
     } catch (error) {
       return { ok: false, error }
     }

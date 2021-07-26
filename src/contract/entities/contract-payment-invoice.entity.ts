@@ -24,7 +24,7 @@ export class ContractPaymentInvoice {
   @Field(() => Contract)
   contract_id: Contract
 
-  @ManyToOne(() => FileStorageItem, (f) => f.payment_invoice)
+  @ManyToOne(() => FileStorageItem, (f) => f.payment_invoice, { eager: true })
   @JoinColumn({ name: 'file_storage_item_id' })
   @Field(() => FileStorageItem)
   file_storage_item_id: FileStorageItem
@@ -36,6 +36,7 @@ export class ContractPaymentInvoice {
   @OneToMany(
     () => ContractPaymentInvoiceConfirmation,
     (cpc) => cpc.contract_payment_invoice_id,
+    { eager: true },
   )
   @Field(() => [ContractPaymentInvoiceConfirmation], { nullable: true })
   confirm: ContractPaymentInvoiceConfirmation[]

@@ -22,5 +22,5 @@ export class SaveStorageItemInput {
 @ObjectType()
 export class SaveStorageItemOutput extends CoreOutput {
   @Field(() => Number, { nullable: true })
-  contractId?: number
+  fileId?: number
 }
