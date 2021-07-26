@@ -49,11 +49,18 @@ export class ContractService {
     try {
       const file = await this.fileStorageItemRepository.findOne(data.fileId)
       const request = await this.requestRepository.findOne(data.requestId)
+      const contractor = await this.contractorRepository.findOne(
+        data.contractorId,
+      )
 
-      if (!file || !request) {
+      if (!file || !request || !contractor) {
         return {
           ok: false,
-          error: !file ? 'storage item not found' : 'request not found',
+          error: !file
+            ? 'storage item not found'
+            : !contractor
+            ? 'contractor not found'
+            : 'request not found',
         }
       }
 
@@ -75,6 +82,7 @@ export class ContractService {
         service_request_id: request,
         number: data.contractNumber,
         file_storage_item_id: file,
+        contractor_id: contractor,
       })
 
       await this.contractRepository.save(newContract)

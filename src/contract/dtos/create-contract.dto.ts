@@ -11,6 +11,9 @@ export class CreateContractInput {
 
   @Field(() => Number)
   requestId: number
+
+  @Field(() => Number)
+  contractorId: number
 }
 
 @ObjectType()
