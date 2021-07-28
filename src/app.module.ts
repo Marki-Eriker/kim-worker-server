@@ -27,6 +27,9 @@ import { ContractModule } from './contract/contract.module'
 import { Contract } from './contract/entities/contract.entity'
 import { ContractPaymentInvoice } from './contract/entities/contract-payment-invoice.entity'
 import { ContractPaymentInvoiceConfirmation } from './contract/entities/contract-payment-confirmation.entity'
+import { MailerModule } from '@nestjs-modules/mailer'
+import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter'
+import { MailModule } from './mail/mail.module'
 
 @Module({
   imports: [
@@ -43,6 +46,19 @@ import { ContractPaymentInvoiceConfirmation } from './contract/entities/contract
         TOKEN_SECRET: Joi.string().required(),
         ACCESS_TOKEN_TTL: Joi.string().required(),
         REFRESH_TOKEN_TTL: Joi.string().required(),
+        LK_DB_HOST: Joi.string().required(),
+        LK_DB_PORT: Joi.string().required(),
+        LK_DB_USER: Joi.string().required(),
+        LK_DB_PASSWORD: Joi.string().required(),
+        LK_DB_NAME: Joi.string().required(),
+        LK_DB_SCHEMA: Joi.string().required(),
+        UPLOAD_LINK: Joi.string().required(),
+        SMTP_HOST: Joi.string().required(),
+        SMTP_PORT: Joi.string().required(),
+        SMTP_USER: Joi.string().required(),
+        SMTP_PASSWORD: Joi.string().required(),
+        SMTP_FROM_EMAIL: Joi.string().required(),
+        SMTP_FROM_MESSAGE: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRootAsync({
@@ -96,6 +112,27 @@ import { ContractPaymentInvoiceConfirmation } from './contract/entities/contract
       accessTokenTTL: process.env.ACCESS_TOKEN_TTL,
       refreshTokenTTL: process.env.REFRESH_TOKEN_TTL,
     }),
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.SMTP_HOST,
+        port: +process.env.SMTP_PORT,
+        secure: false,
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASSWORD,
+        },
+        tls: {
+          rejectUnauthorized: false,
+        },
+      },
+      template: {
+        dir: __dirname + '/mail/template',
+        adapter: new PugAdapter(),
+        options: {
+          strict: true,
+        },
+      },
+    }),
     JwtModule.forRoot({ privateKey: process.env.TOKEN_SECRET }),
     RequestModule.forRoot({ fileLink: process.env.FILE_LINK }),
     UserModule,
@@ -104,6 +141,7 @@ import { ContractPaymentInvoiceConfirmation } from './contract/entities/contract
     AccessModule,
     UploadModule,
     ContractModule,
+    MailModule,
   ],
   controllers: [],
   providers: [],
